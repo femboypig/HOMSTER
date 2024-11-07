@@ -5,53 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clicker Game</title>
     <style>
-        /* Добавьте стили для кнопки и интерфейса */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 50px;
+            padding: 50px;
+            background-color: #f0f0f0;
         }
         .btn {
-            padding: 10px 20px;
-            font-size: 18px;
+            padding: 20px;
+            font-size: 20px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
+            margin: 10px;
         }
-        .btn:hover {
-            background-color: #45a049;
+        #clicks {
+            font-size: 24px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Clicker Game</h1>
-    <button class="btn" onclick="incrementCounter()">Click me!</button>
-    <h2>Clicks: <span id="clicks">0</span></h2>
+    <button class="btn" onclick="incrementCounter()">Click Me!</button>
+    <div id="clicks">Clicks: 0</div>
 
     <script>
-        // Генерация случайного user_id если нет в sessionStorage
-        let userId = sessionStorage.getItem('user_id');
-        if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substr(2, 9);
-            sessionStorage.setItem('user_id', userId);
-        }
+        async function incrementCounter() {
+            let userId = localStorage.getItem('user_id');
 
-        // Функция для отправки запроса на сервер и получения количества кликов
-        function incrementCounter() {
-            fetch('http://localhost:3000/increment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ user_id: userId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('clicks').textContent = data.clicks;
-            })
-            .catch(error => console.error('Error:', error));
+            // Если userId еще не задан, создаем новый
+            if (!userId) {
+                userId = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('user_id', userId); // Сохраняем userId в localStorage
+            }
+
+            // Замените на ваш реальный URL на Vercel
+            const apiUrl = 'https://homster.vercel.app/increment'; 
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Обновляем отображение кликов на странице
+                    document.getElementById('clicks').innerText = `Clicks: ${data.clicks}`;
+                } else {
+                    console.error('Ошибка при отправке запроса на сервер');
+                }
+            } catch (error) {
+                console.error('Ошибка сети:', error);
+            }
         }
     </script>
 </body>
