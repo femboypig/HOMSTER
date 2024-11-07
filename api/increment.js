@@ -1,41 +1,52 @@
-// increment.js
+const express = require('express');
+const app = express();
 const fs = require('fs');
 const path = require('path');
 
-// Путь к базе данных
-const dbFilePath = path.join(__dirname, 'db.json');
+// Мидлвар для обработки JSON
+app.use(express.json());
 
-// Чтение данных из базы
-function readDB() {
+// Путь к файлу базы данных
+const dbFile = path.join(__dirname, 'db.json');
+
+// Чтение данных из базы данных
+const readDb = () => {
     try {
-        const data = fs.readFileSync(dbFilePath, 'utf8');
-        return JSON.parse(data);
+        return JSON.parse(fs.readFileSync(dbFile, 'utf8'));
     } catch (error) {
         return { users: {} };
     }
-}
+};
 
 // Запись данных в базу данных
-function writeDB(data) {
-    fs.writeFileSync(dbFilePath, JSON.stringify(data, null, 4));
-}
+const writeDb = (data) => {
+    fs.writeFileSync(dbFile, JSON.stringify(data, null, 4));
+};
 
-// Функция для увеличения кликов
-function incrementClicks(userId) {
-    const db = readDB();
+// Роут для увеличения кликов
+app.post('/increment', (req, res) => {
+    const { user_id } = req.body;
 
-    // Если user_id нет в базе, создаем его
-    if (!db.users[userId]) {
-        db.users[userId] = { clicks: 0 };
+    // Чтение данных из базы
+    const db = readDb();
+
+    // Если пользователь не найден, создаем его запись
+    if (!db.users[user_id]) {
+        db.users[user_id] = { clicks: 0 };
     }
 
     // Увеличиваем количество кликов
-    db.users[userId].clicks += 1;
+    db.users[user_id].clicks++;
 
-    // Сохраняем обновленную информацию в db.json
-    writeDB(db);
+    // Записываем обновленные данные в базу
+    writeDb(db);
 
-    return db.users[userId].clicks; // Возвращаем количество кликов
-}
+    // Отправляем обновленные данные
+    res.json({ clicks: db.users[user_id].clicks });
+});
 
-module.exports = { incrementClicks };
+// Порт, на котором будет работать сервер
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
