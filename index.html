@@ -51,7 +51,6 @@
     </div>
 
     <script>
-        // Генерация уникального идентификатора пользователя и сохранение его в localStorage
         function getUserId() {
             let userId = localStorage.getItem('userId');
             if (!userId) {
@@ -61,7 +60,7 @@
             return userId;
         }
 
-        const userId = getUserId(); // Получаем уникальный идентификатор пользователя
+        const userId = getUserId();
         const clickCountElement = document.getElementById('click-count');
         const clickButton = document.getElementById('click-button');
 
@@ -76,14 +75,14 @@
             localStorage.setItem('clickCount', clickCount); // Сохранение в localStorage
             clickCountElement.textContent = `Clicks: ${clickCount}`; // Обновление отображения
 
-            // Попытка отправить данные на сервер (если API доступен)
+            // Отправка данных на сервер
             try {
                 const response = await fetch('/api/increment', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ user_id: userId, clicks: clickCount }) // Отправка обновленного счетчика
+                    body: JSON.stringify({ user_id: userId })
                 });
 
                 if (!response.ok) {
@@ -91,12 +90,11 @@
                 }
 
                 const data = await response.json();
-                // Обноваение кликов на основе ответа сервера, если необходимо
-                clickCountElement.textContent = `Clicks: ${data.clicks}`; 
+                clickCountElement.textContent = `Clicks: ${data.clicks}`;
             } catch (error) {
                 console.error('Error:', error);
             }
         }
-    </script>        
+    </script>
 </body>
 </html>
