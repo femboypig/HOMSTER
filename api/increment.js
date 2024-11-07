@@ -24,7 +24,7 @@ const writeDb = (data) => {
 };
 
 // Роут для увеличения кликов
-app.post('/increment', (req, res) => {
+app.post('api/increment', (req, res) => {
     const { user_id } = req.body;
 
     // Чтение данных из базы
