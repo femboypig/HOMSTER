@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAMSTER KOMBAT</title>
+    <style>
+        /* Основные стили */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        
+        /* Контейнер игры */
+        .clicker-container {
+            text-align: center;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Заголовок и счетчик */
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        #counter {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+        
+        /* Кнопка для кликов */
+        .click-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: #fff;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .click-button:active {
+            transform: scale(0.95);
+            background: #fa5252;
+        }
+    </style>
+</head>
+<body>
+    <div class="clicker-container">
+        <h1>THIS IS HAMSTER?!</h1>
+        <p id="counter">Clicks: 0</p>
+        <button class="click-button" onclick="incrementCounter()">Click Me!</button>
+    </div>
+
+    <script>
+        let userId = "user_" + Math.floor(Math.random() * 100000);
+
+        function incrementCounter() {
+            fetch('/increment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("counter").innerText = `Clicks: ${data.clicks}`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
